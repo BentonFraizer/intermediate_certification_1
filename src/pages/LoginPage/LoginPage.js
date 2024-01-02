@@ -50,13 +50,11 @@ export const LoginPage = () => {
         if (response.ok) {
           return response.json();
         }
-        console.log('response', response);
         return Promise.reject();
       })
       .then(function (data) {
         setMessage(data.message);
         setIsResultSuccess(data.success);
-        console.log('--->', data.message);
       })
       .catch(function (error) {
         console.warn('Something went wrong.', error);

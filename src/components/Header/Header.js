@@ -10,6 +10,7 @@ export const Header = () => {
       <div className="menu">
         <Link to={AppRoute.Registration}>Регистрация</Link>
         <Link to={AppRoute.Login}>Вход</Link>
+        <Link to={AppRoute.Weather}>Погода</Link>
         <Link to={AppRoute.About}>О сервисе</Link>
       </div>
     </header>

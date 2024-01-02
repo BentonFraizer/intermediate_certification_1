@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button, Form, Input } from 'antd';
 import s from './registration__page.module.css';
 import { ApiRoute } from '../../consts';
-import cn from 'classnames';
 
 const formItemLayout = {
   labelCol: {
@@ -85,7 +84,6 @@ export const RegistrationPage = () => {
             {
               required: true,
               message: 'Please input your login!',
-              // whitespace: true,
             },
             {
               validator: (_, value) => {
