@@ -6,3 +6,17 @@
   align-items: center;
   border: 2px solid skyblue;
 }
+
+.message {
+  font-size: 20px;
+  height: 30px;
+  margin: 10px 0 20px 0;
+}
+
+.error {
+  color: orange;
+}
+
+.success {
+  color: lightgreen;
+}

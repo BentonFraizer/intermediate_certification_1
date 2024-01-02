@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Form, Input } from 'antd';
 import s from './login__page.module.css';
+import { ApiRoute } from '../../consts';
 
 const formItemLayout = {
   labelCol: {
@@ -35,13 +36,39 @@ const tailFormItemLayout = {
 
 export const LoginPage = () => {
   const [form] = Form.useForm();
+  const [message, setMessage] = useState('');
+  const [isResultSuccess, setIsResultSuccess] = useState();
   const onFinish = (values) => {
-    console.log('Received values of form: ', values);
+    fetch(`http://localhost:9500${ApiRoute.Login}`, {
+      method: 'POST',
+      body: JSON.stringify({ values }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    })
+      .then(function (response) {
+        if (response.ok) {
+          return response.json();
+        }
+        console.log('response', response);
+        return Promise.reject();
+      })
+      .then(function (data) {
+        setMessage(data.message);
+        setIsResultSuccess(data.success);
+        console.log('--->', data.message);
+      })
+      .catch(function (error) {
+        console.warn('Something went wrong.', error);
+      });
   };
+
+  const messageClass = isResultSuccess ? s.success : s.error;
 
   return (
     <div className={s.login}>
-      <h2>Вход</h2>
+      <h2 style={{ margin: 0 }}>Вход</h2>
+      <div className={`${s.message} ${messageClass}`}>{message}</div>
       <Form
         {...formItemLayout}
         form={form}

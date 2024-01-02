@@ -9,3 +9,8 @@ export const AppRoute = {
   // Offline: '/offline',
   // FailedOrder: '/failed-order',
 };
+
+export const ApiRoute = {
+  Registration: '/registration',
+  Login: '/login',
+};
