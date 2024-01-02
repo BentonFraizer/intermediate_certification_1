@@ -5,6 +5,7 @@ import { Header } from '../Header/Header';
 import { RegistrationPage } from '../../pages/RegistrationPage/RegistrationPage';
 import { AboutPage } from '../../pages/AboutPage/AboutPage';
 import { NotFoundPage } from '../../pages/NotFoundPage/NotFoundPage';
+import { LoginPage } from '../../pages/LoginPage/LoginPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Header />
         <Routes>
           <Route path={AppRoute.Registration} element={<RegistrationPage />} />
+          <Route path={AppRoute.Login} element={<LoginPage />} />
           <Route path={AppRoute.About} element={<AboutPage />} />
           <Route path={AppRoute.NotFound} element={<NotFoundPage />} />
         </Routes>
