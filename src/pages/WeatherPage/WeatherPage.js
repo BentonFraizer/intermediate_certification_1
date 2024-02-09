@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import s from './weater__page.module.css';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, Spin, Table } from 'antd';
+import { useGetWeatherQuery } from '../../store/weatherApi';
 
 const formItemLayout = {
   labelCol: {
@@ -37,38 +38,67 @@ const tailFormItemLayout = {
 
 export const WeatherPage = () => {
   const [form] = Form.useForm();
-  const [city, setCity] = useState('initialState');
-  const [cityInfo, setCityInfo] = useState();
-  const [errorMessage, setErrorMessage] = useState('');
+  const [city, setCity] = useState('moscow');
+  const { data = [], error, isLoading } = useGetWeatherQuery(city);
+  const [cityInfo, setCityInfo] = useState(null);
+  const [errorObj, setErrorObj] = useState('');
 
-  const onFinish = (values) => {
-    fetch(` https://api.weatherapi.com/v1/current.json?key=6513546f07374d0fb24113839240201&q=${city}&aqi=no`, {
-      method: 'POST',
-      body: JSON.stringify({ values }),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    })
-      .then(function (response) {
-        if (response.ok) {
-          return response.json();
-        }
-        return Promise.reject(response);
-      })
-      .then(function (data) {
-        setCityInfo(data);
-        setErrorMessage('');
-      })
-      .catch(function (error) {
-        setErrorMessage('Города с таким наименованием не существует.');
-        setCityInfo();
-        console.warn('Something went wrong.', error);
-      });
+  useEffect(() => {
+    setErrorObj(error);
+    if (error) {
+      setCityInfo(null);
+    }
+    if (city === '') {
+      setErrorObj('');
+    }
+  }, [error, city]);
+
+  const onFinish = () => {
+    setCityInfo(data);
   };
+
+  const columns = [
+    {
+      title: 'Название города',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Страна',
+      dataIndex: 'country',
+      key: 'country',
+    },
+    {
+      title: 'Температура',
+      dataIndex: 'temperature',
+      key: 'temperature',
+    },
+    {
+      title: 'Погодные условия',
+      dataIndex: 'conditions',
+      key: 'conditions',
+    },
+    {
+      title: 'Скорость ветра',
+      dataIndex: 'speed',
+      key: 'speed',
+    },
+  ];
+
+  const dataSource = [
+    {
+      key: '1',
+      name: cityInfo?.location.name,
+      country: cityInfo?.location.country,
+      temperature: cityInfo?.current.temp_c,
+      conditions: cityInfo?.current.condition.text,
+      speed: cityInfo?.current.wind_kph,
+    },
+  ];
 
   return (
     <div className={s.weather}>
-      <h2 style={{ margin: '20px' }}>Ведите название города</h2>
+      <h2 style={{ margin: '20px' }}>Введите название города</h2>
       <Form
         {...formItemLayout}
         form={form}
@@ -112,29 +142,19 @@ export const WeatherPage = () => {
         </Form.Item>
       </Form>
 
-      {cityInfo && (
-        <div className={s.info}>
-          <img src={cityInfo.current.condition.icon} style={{ width: '100px' }} alt="иконка погоды"></img>
-          <div>
-            <div className={s.info__row}>
-              <span className={s.info__text}>Название города:</span> {cityInfo.location.name}
-            </div>
-            <div className={s.info__row}>
-              <span className={s.info__text}>Страна:</span> {cityInfo.location.country}
-            </div>
-            <div className={s.info__row}>
-              <span className={s.info__text}>Температура (°C):</span> {cityInfo.current.temp_c}
-            </div>
-            <div className={s.info__row}>
-              <span className={s.info__text}>Погодные условия:</span> {cityInfo.current.condition.text}
-            </div>
-            <div className={s.info__row}>
-              <span className={s.info__text}>Скорость ветра:</span> {cityInfo.current.wind_kph}
-            </div>
-          </div>
+      {isLoading ? (
+        <div className={s.spinnerWrapper}>
+          <Spin size="large" />
         </div>
+      ) : (
+        cityInfo && (
+          <div className={s.info}>
+            <img src={cityInfo.current.condition.icon} style={{ width: '100px' }} alt="иконка погоды"></img>
+            <Table dataSource={dataSource} columns={columns} pagination={false}></Table>
+          </div>
+        )
       )}
-      {errorMessage && <div className={s.error__message}>{errorMessage}</div>}
+      {errorObj && <div className={s.error__message}>{errorObj.data.error.message}</div>}
     </div>
   );
 };
