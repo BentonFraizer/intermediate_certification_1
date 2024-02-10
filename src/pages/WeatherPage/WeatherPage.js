@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import s from './weater__page.module.css';
 import { Button, Form, Input, Spin, Table } from 'antd';
 import { useGetWeatherQuery } from '../../store/weatherApi';
+import { usePostWeatherInfoMutation } from '../../store/postWeatherApi';
 
 const formItemLayout = {
   labelCol: {
@@ -40,6 +41,7 @@ export const WeatherPage = () => {
   const [form] = Form.useForm();
   const [city, setCity] = useState('moscow');
   const { data = [], error, isLoading } = useGetWeatherQuery(city);
+  const [postWeatherInfo, { isError }] = usePostWeatherInfoMutation();
   const [cityInfo, setCityInfo] = useState(null);
   const [errorObj, setErrorObj] = useState('');
 
@@ -53,8 +55,18 @@ export const WeatherPage = () => {
     }
   }, [error, city]);
 
-  const onFinish = () => {
+  // При выполнении запроса сразу же выполняестся запись в БД
+  const onFinish = async () => {
     setCityInfo(data);
+    if (cityInfo) {
+      await postWeatherInfo({
+        name: cityInfo?.location.name,
+        country: cityInfo?.location.country,
+        temperature: cityInfo?.current.temp_c,
+        conditions: cityInfo?.current.condition.text,
+        speed: cityInfo?.current.wind_kph,
+      }).unwrap();
+    }
   };
 
   const columns = [
@@ -155,6 +167,7 @@ export const WeatherPage = () => {
         )
       )}
       {errorObj && <div className={s.error__message}>{errorObj.data.error.message}</div>}
+      {isError && <div className={s.error__message}>{isError`asdasdasd`}</div>}
     </div>
   );
 };
