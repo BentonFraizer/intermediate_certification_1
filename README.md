@@ -1,3 +1,7 @@
+# В данном репозитории выполнены две промежуточных аттестации, №1 и №2.
+
+## Первая выполнена в ветке dev, вторая не слита в dev, а находистся в отдельной ветке `2-rtk-query`.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
